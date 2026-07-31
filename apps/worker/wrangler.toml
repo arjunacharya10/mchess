@@ -26,4 +26,4 @@ new_sqlite_classes = ["GameSession", "Matchmaker"]
 [[d1_databases]]
 binding = "DB"
 database_name = "mchess-db"
-database_id = "REPLACE_WITH_ID_FROM_WRANGLER_D1_CREATE"
+database_id = "e4b89911-1665-41c2-b98a-ce83416b39f0"
