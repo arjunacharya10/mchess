@@ -1,0 +1,229 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+#root {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.home-page,
+.matchmaking-page,
+.room-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.home-actions,
+.status-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.account-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-end;
+}
+
+.account-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+}
+
+.guest-name-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.guest-name-field input {
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #8884;
+}
+
+.ongoing-match-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #4a90d922;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.lobby-section,
+.history-section {
+  width: 100%;
+}
+
+.lobby-list,
+.history-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lobby-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: #8882;
+  border-radius: 6px;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #8884;
+  cursor: pointer;
+}
+
+.error-text {
+  color: #d33;
+}
+
+.share-link code {
+  background: #8882;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.board-wrapper {
+  position: relative;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(2.5rem, 4rem));
+  grid-template-rows: repeat(7, minmax(2.5rem, 4rem));
+  border: 2px solid #333;
+  width: min(90vw, 420px);
+  aspect-ratio: 1 / 1;
+}
+
+.square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0;
+}
+
+.square-light {
+  background: #eed7b8;
+}
+
+.square-dark {
+  background: #a97a53;
+}
+
+.square-selected {
+  outline: 3px solid #4a90d9 inset;
+}
+
+.square-last-move {
+  box-shadow: inset 0 0 0 3px #f2c94c;
+}
+
+.piece-icon {
+  width: 80%;
+  height: 80%;
+  pointer-events: none;
+}
+
+.move-marker {
+  position: absolute;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: #0006;
+}
+
+.capture-marker {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  border: 4px solid #c0392bcc;
+}
+
+.promotion-picker-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.promotion-picker {
+  background: #fff;
+  color: #111;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.promotion-choices {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.promotion-choices button {
+  width: 3rem;
+  height: 3rem;
+  padding: 0.25rem;
+}
+
+.status-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-banner-over {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.status-check {
+  color: #d33;
+  font-weight: 600;
+}
+
+.move-history {
+  columns: 2;
+  font-size: 0.9rem;
+  width: 100%;
+  max-width: 320px;
+}

@@ -1,0 +1,29 @@
+name = "mchess-worker"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+GITHUB_CLIENT_ID = "REPLACE_WITH_YOUR_GITHUB_OAUTH_APP_CLIENT_ID"
+
+[assets]
+directory = "../web/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[[durable_objects.bindings]]
+name = "GAME_SESSION"
+class_name = "GameSession"
+
+[[durable_objects.bindings]]
+name = "MATCHMAKER"
+class_name = "Matchmaker"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["GameSession", "Matchmaker"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mchess-db"
+database_id = "REPLACE_WITH_ID_FROM_WRANGLER_D1_CREATE"

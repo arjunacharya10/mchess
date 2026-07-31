@@ -1,0 +1,2 @@
+GITHUB_CLIENT_SECRET=your-github-oauth-app-client-secret
+SESSION_SECRET=a-long-random-string-eg-openssl-rand-base64-32

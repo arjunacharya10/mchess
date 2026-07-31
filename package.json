@@ -1,0 +1,16 @@
+{
+  "name": "mchess",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:web": "npm run build --workspace apps/web",
+    "dev:worker": "npm run dev --workspace apps/worker",
+    "dev:web": "npm run dev --workspace apps/web",
+    "test:engine": "npm run test --workspace packages/chess-engine",
+    "deploy": "npm run build:web && npm run deploy --workspace apps/worker"
+  }
+}
