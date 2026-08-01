@@ -72,6 +72,9 @@ export function HomePage() {
         <button type="button" onClick={() => navigate("/matchmaking")} disabled={!canStart}>
           Quick match
         </button>
+        <button type="button" onClick={() => navigate("/solo")}>
+          Play against yourself
+        </button>
       </div>
       {error && <p className="error-text">{error}</p>}
 
