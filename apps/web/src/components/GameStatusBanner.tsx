@@ -20,6 +20,11 @@ function describeGameOver(
   yourColor: Color | null,
   spectator: boolean,
 ): string {
+  // These two never have a winner/loser — there was no game to win or lose, so skip
+  // the Draw/You-won/You-lost framing entirely and just say what happened.
+  if (reason === "abandoned") return "Cancelled — no opponent joined in time.";
+  if (reason === "cancelled") return "Game cancelled.";
+
   const youWon = winner !== null && winner === yourColor;
   const outcome = winner === null ? "Draw" : spectator ? `${winner} won` : youWon ? "You won" : "You lost";
   const reasonText: Record<string, string> = {

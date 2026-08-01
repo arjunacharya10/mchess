@@ -38,7 +38,11 @@ export function PublicLobbyList({ games }: { games: PublicGame[] }) {
               {game.whiteDisplayName ?? "Player 1"}
               {game.blackDisplayName ? ` vs ${game.blackDisplayName}` : " (waiting for opponent)"}
             </span>
-            {game.status === "waiting-for-opponent" ? (
+            {/* A room can already be full (both players assigned via /join) before its
+                status flips to "in-progress" (that only happens once both sides actually
+                connect over WebSocket) — key off blackDisplayName, not status, so a full
+                room offers Watch instead of a Join that would 409. */}
+            {!game.blackDisplayName ? (
               <button type="button" onClick={() => handleJoin(game.gameId)}>
                 Join
               </button>

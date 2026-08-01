@@ -45,7 +45,10 @@ export function RoomPage({ gameId }: { gameId: string }) {
     <div className="room-page">
       {!game.gameOver && !game.opponentConnected && (
         <p className="share-link">
-          Share this link with your opponent: <code>{shareUrl}</code>
+          Share this link with your opponent: <code>{shareUrl}</code>{" "}
+          <button type="button" onClick={game.cancelWaiting}>
+            Cancel game
+          </button>
         </p>
       )}
       <GameStatusBanner
@@ -65,6 +68,11 @@ export function RoomPage({ gameId }: { gameId: string }) {
         onMove={game.sendMove}
       />
       <MoveHistoryList moveHistory={game.gameState.moveHistory} />
+      {game.gameOver && (
+        <button type="button" onClick={() => navigate("/")}>
+          Back home
+        </button>
+      )}
     </div>
   );
 }

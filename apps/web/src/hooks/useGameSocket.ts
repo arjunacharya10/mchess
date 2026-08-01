@@ -133,6 +133,7 @@ export function useGameSocket(gameId: string, connection: GameSocketMode | null)
   const resign = useCallback(() => send({ type: "resign" }), [send]);
   const offerDraw = useCallback(() => send({ type: "offerDraw" }), [send]);
   const respondDraw = useCallback((accept: boolean) => send({ type: "respondDraw", accept }), [send]);
+  const cancelWaiting = useCallback(() => send({ type: "cancelWaiting" }), [send]);
 
-  return { ...state, sendMove, resign, offerDraw, respondDraw };
+  return { ...state, sendMove, resign, offerDraw, respondDraw, cancelWaiting };
 }

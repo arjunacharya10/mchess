@@ -32,6 +32,7 @@ import type { Env } from "../env.js";
 import { generateSecret } from "../utils/ids.js";
 
 const DISCONNECT_GRACE_PERIOD_MS = 5 * 60 * 1000;
+const WAITING_ABANDON_MS = 15 * 60 * 1000;
 const STORAGE_KEY = "session";
 
 interface PlayerSlot {
@@ -121,6 +122,7 @@ export class GameSession implements DurableObject {
       lastMoveAt: Date.now(),
     };
     await this.saveSession(session);
+    await this.recomputeAlarm(session);
     if (session.visibility === "public") {
       await insertPublicGame(this.env, session.gameId, session.players.white!.displayName, body.userId);
     }
@@ -221,6 +223,9 @@ export class GameSession implements DurableObject {
       case "respondDraw":
         await this.handleRespondDraw(session, color, parsed.accept);
         break;
+      case "cancelWaiting":
+        await this.handleCancelWaiting(session);
+        break;
       case "ping":
         sendJson(ws, { type: "pong" });
         break;
@@ -247,7 +252,16 @@ export class GameSession implements DurableObject {
 
   async alarm(): Promise<void> {
     const session = await this.loadSession().catch(() => null);
-    if (!session || session.status !== "in-progress") return;
+    if (!session) return;
+
+    if (session.status === "waiting-for-opponent") {
+      if (Date.now() >= session.createdAt + WAITING_ABANDON_MS) {
+        await this.abandonGame(session, "abandoned");
+      }
+      return;
+    }
+
+    if (session.status !== "in-progress") return;
 
     const now = Date.now();
     const timedOut: Color[] = (["white", "black"] as const).filter((color) => {
@@ -331,6 +345,11 @@ export class GameSession implements DurableObject {
     }
   }
 
+  private async handleCancelWaiting(session: SessionState): Promise<void> {
+    if (session.status !== "waiting-for-opponent") return;
+    await this.abandonGame(session, "cancelled");
+  }
+
   // ---- Shared helpers ----
 
   private async endGame(session: SessionState, winner: Color | null, reason: GameOverReason): Promise<void> {
@@ -365,6 +384,30 @@ export class GameSession implements DurableObject {
     this.ctx.waitUntil(
       applyRatingUpdates(this.env, session.players.white?.userId, session.players.black?.userId, winner),
     );
+
+    for (const player of [session.players.white, session.players.black]) {
+      if (player?.userId) this.ctx.waitUntil(setCurrentGameId(this.env, player.userId, null));
+    }
+  }
+
+  /**
+   * Ends a game that never actually started (timed out waiting, or cancelled by the
+   * waiting player). Unlike endGame(), nothing is archived to match history and no
+   * rating is touched, since no real game was ever played.
+   */
+  private async abandonGame(session: SessionState, reason: GameOverReason): Promise<void> {
+    session.status = "completed";
+    session.result = { winner: null, reason };
+    await this.saveSession(session);
+    await this.ctx.storage.deleteAlarm();
+
+    const message: ServerGameMessage = { type: "gameOver", reason, winner: null };
+    this.sendToColor(session, "white", message);
+    this.sendToColor(session, "black", message);
+
+    if (session.visibility === "public") {
+      this.ctx.waitUntil(deletePublicGame(this.env, session.gameId));
+    }
 
     for (const player of [session.players.white, session.players.black]) {
       if (player?.userId) this.ctx.waitUntil(setCurrentGameId(this.env, player.userId, null));
@@ -426,6 +469,13 @@ export class GameSession implements DurableObject {
   }
 
   private async recomputeAlarm(session: SessionState): Promise<void> {
+    if (session.status === "waiting-for-opponent") {
+      // A single deadline for the whole pre-start phase, independent of any
+      // connect/disconnect churn within it: not started within the window, auto-cancel.
+      await this.ctx.storage.setAlarm(session.createdAt + WAITING_ABANDON_MS);
+      return;
+    }
+
     if (session.status !== "in-progress") {
       await this.ctx.storage.deleteAlarm();
       return;

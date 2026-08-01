@@ -17,6 +17,7 @@ export function HomePage() {
   const lobbyGames = usePublicLobby();
 
   const displayName = user?.displayName ?? guestName;
+  const canStart = Boolean(user) || guestName.trim().length > 0;
 
   function handleGuestNameChange(value: string) {
     setGuestNameState(value);
@@ -43,8 +44,8 @@ export function HomePage() {
       <AccountBadge user={user} loading={loading} onSignOut={signOut} />
       <h1>7x7 Chess</h1>
       <p>
-        A chess variant on a 7x7 board: no queens in the starting position, and Rooks/Bishops slide at
-        most 3 squares. All other rules are standard.
+        A chess variant on a 7x7 board: no queens in the starting position, no castling, and
+        Rooks/Bishops slide at most 3 squares. All other rules are standard.
       </p>
 
       {!user && (
@@ -59,15 +60,16 @@ export function HomePage() {
           />
         </label>
       )}
+      {!canStart && <p className="hint-text">Enter a name to start playing.</p>}
 
       <div className="home-actions">
-        <button type="button" onClick={() => handleCreate(false)} disabled={creating !== null}>
+        <button type="button" onClick={() => handleCreate(false)} disabled={creating !== null || !canStart}>
           Create private game
         </button>
-        <button type="button" onClick={() => handleCreate(true)} disabled={creating !== null}>
+        <button type="button" onClick={() => handleCreate(true)} disabled={creating !== null || !canStart}>
           Create public game
         </button>
-        <button type="button" onClick={() => navigate("/matchmaking")}>
+        <button type="button" onClick={() => navigate("/matchmaking")} disabled={!canStart}>
           Quick match
         </button>
       </div>

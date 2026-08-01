@@ -40,7 +40,9 @@ export type GameOverReason =
   | GameStatus["result"]
   | "resignation"
   | "draw-agreement"
-  | "disconnect-timeout";
+  | "disconnect-timeout"
+  | "abandoned"
+  | "cancelled";
 
 // ---- Game session (/ws/game/:id) ----
 
@@ -49,6 +51,7 @@ export type ClientGameMessage =
   | { type: "resign" }
   | { type: "offerDraw" }
   | { type: "respondDraw"; accept: boolean }
+  | { type: "cancelWaiting" }
   | { type: "ping" };
 
 export type ServerGameMessage =

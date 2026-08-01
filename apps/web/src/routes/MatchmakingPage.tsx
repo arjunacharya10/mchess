@@ -5,9 +5,18 @@ import { useSession } from "../hooks/useSession.js";
 import { navigate } from "../lib/router.js";
 
 export function MatchmakingPage() {
-  const { user } = useSession();
-  const displayName = user?.displayName ?? getGuestName();
-  const { status, position, matchedGameId, cancel } = useMatchmakingSocket(true, displayName || undefined);
+  const { user, loading } = useSession();
+  const guestName = getGuestName();
+  const displayName = user?.displayName ?? guestName;
+  const canProceed = Boolean(user) || guestName.trim().length > 0;
+
+  useEffect(() => {
+    // Defensive guard for direct navigation to this URL (the Home page already
+    // disables the "Quick match" button until a name is set).
+    if (!loading && !canProceed) navigate("/");
+  }, [loading, canProceed]);
+
+  const { status, position, matchedGameId, cancel } = useMatchmakingSocket(canProceed, displayName || undefined);
 
   useEffect(() => {
     if (matchedGameId) navigate(`/game/${matchedGameId}`);
